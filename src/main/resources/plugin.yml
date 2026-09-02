@@ -1,0 +1,17 @@
+name: HeroesMini
+version: ${version}
+main: ai.bfsx.heroes.HeroesPlugin
+api-version: '1.21'
+description: Minecraft Heroes Mini - Special Hearts, Combat timer, Graves. Last man standing.
+authors: [Selim, Black Fountain]
+
+commands:
+  heroes:
+    description: Admin commands for the Heroes Mini event
+    usage: /heroes <start|stop|reset|hearts|revive|graves|combat>
+    permission: heroes.admin
+
+permissions:
+  heroes.admin:
+    description: Manage the Heroes Mini event
+    default: op

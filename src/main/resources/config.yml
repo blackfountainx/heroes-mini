@@ -1,0 +1,7 @@
+# HeroesMini configuration
+# Number of Special Hearts every player starts with
+start-hearts: 3
+# Combat timer in seconds, refreshed by every PvP hit
+combat-seconds: 20
+# Radius searched for a safe grave spot when the death location is unsafe (lava, water, air, void)
+grave-safe-radius: 6
