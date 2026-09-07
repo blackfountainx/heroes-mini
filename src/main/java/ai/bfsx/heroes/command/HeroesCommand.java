@@ -22,6 +22,7 @@ import java.util.UUID;
 
 /**
  * /heroes start|stop|reset|status
+ * /heroes protection [end]
  * /heroes hearts <player> <n>
  * /heroes revive <player>
  * /heroes combat <player> clear
@@ -65,6 +66,16 @@ public class HeroesCommand implements TabExecutor {
                             e.getValue() > 0 ? NamedTextColor.RED : NamedTextColor.DARK_GRAY);
                 }
                 return true;
+            }
+            case "protection" -> {
+                if (a.length >= 2 && a[1].equalsIgnoreCase("end")) {
+                    hearts.endProtection();
+                    return msg(s, "Protection phase ended. PvP is live.", NamedTextColor.GREEN);
+                }
+                if (hearts.isProtected()) {
+                    return msg(s, "Protection active: " + hearts.protectionRemainingSeconds() + "s remaining.", NamedTextColor.AQUA);
+                }
+                return msg(s, "No protection phase active.", NamedTextColor.GRAY);
             }
             case "hearts" -> {
                 if (a.length < 3) return usage(s);
@@ -127,7 +138,7 @@ public class HeroesCommand implements TabExecutor {
     }
 
     private boolean usage(CommandSender s) {
-        msg(s, "/heroes start | stop | reset | status", NamedTextColor.YELLOW);
+        msg(s, "/heroes start | stop | reset | status | protection [end]", NamedTextColor.YELLOW);
         msg(s, "/heroes hearts <player> <n>   /heroes revive <player>   /heroes combat <player>", NamedTextColor.YELLOW);
         msg(s, "/heroes graves [tp <id> | remove <id> | clear]", NamedTextColor.YELLOW);
         return true;
@@ -142,7 +153,7 @@ public class HeroesCommand implements TabExecutor {
     public List<String> onTabComplete(@NotNull CommandSender s, @NotNull Command cmd, @NotNull String label, String[] a) {
         List<String> out = new ArrayList<>();
         if (a.length == 1) {
-            for (String o : List.of("start", "stop", "reset", "status", "hearts", "revive", "combat", "graves")) {
+            for (String o : List.of("start", "stop", "reset", "status", "protection", "hearts", "revive", "combat", "graves")) {
                 if (o.startsWith(a[0].toLowerCase())) out.add(o);
             }
         } else if (a.length == 2) {
@@ -154,6 +165,11 @@ public class HeroesCommand implements TabExecutor {
                 }
                 case "graves" -> {
                     for (String o : List.of("tp", "remove", "clear")) {
+                        if (o.startsWith(a[1].toLowerCase())) out.add(o);
+                    }
+                }
+                case "protection" -> {
+                    for (String o : List.of("end")) {
                         if (o.startsWith(a[1].toLowerCase())) out.add(o);
                     }
                 }
