@@ -156,9 +156,11 @@ public class GraveManager {
     public void open(Player player, Grave grave) {
         if (grave.openedBy() != null) {
             Player other = Bukkit.getPlayer(grave.openedBy());
-            if (other != null && other.isOnline() && !other.equals(player)) {
-                player.sendMessage(Component.text(other.getName() + " is already looting this grave.", NamedTextColor.RED));
-                return;
+            if (other != null && other.isOnline()) {
+                if (!other.equals(player)) {
+                    player.sendMessage(Component.text(other.getName() + " is already looting this grave.", NamedTextColor.RED));
+                }
+                return; // already open by an online player (incl. this one) -> do not open a second view
             }
         }
         GraveHolder holder = new GraveHolder(grave.id());
