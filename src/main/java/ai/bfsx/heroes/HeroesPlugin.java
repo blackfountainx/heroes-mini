@@ -43,6 +43,8 @@ public final class HeroesPlugin extends JavaPlugin {
         getCommand("heroes").setTabCompleter(cmd);
 
         new ActionBarTask(this).runTaskTimer(this, 20L, 20L);
+        // Self-healing grave markers: re-spawn any removed at runtime, loaded chunks only
+        Bukkit.getScheduler().runTaskTimer(this, () -> graves.reviveAllInLoadedChunks(), 200L, 200L);
 
         getLogger().info("HeroesMini enabled. Event state: " + hearts.getState());
     }

@@ -151,6 +151,34 @@ public class GraveManager {
         removeMarkersAt(grave, loc);
     }
 
+    /** True when the grave's marker stand still exists and carries this grave's id. */
+    private boolean isMarkerAlive(Grave grave) {
+        if (grave.markerId() == null) return false;
+        Entity e = Bukkit.getEntity(grave.markerId());
+        if (!(e instanceof ArmorStand stand) || !e.isValid()) return false;
+        String id = stand.getPersistentDataContainer().get(markerKey, PersistentDataType.STRING);
+        return grave.id().toString().equals(id);
+    }
+
+    /** Re-spawns the marker if it went missing at runtime (entity clear, /kill, chunk edge case). */
+    public void reviveMarkerIfMissing(Grave grave) {
+        if (isMarkerAlive(grave)) return;
+        Location loc = grave.location();
+        // Never force-load chunks: unloaded graves wait until their chunk is loaded again
+        if (loc.getWorld() == null || !loc.getChunk().isLoaded()) return;
+        spawnMarker(grave);
+        save();
+    }
+
+    /** Checks every grave in a loaded chunk and re-spawns missing markers. */
+    public void reviveAllInLoadedChunks() {
+        for (Grave g : graves.values()) {
+            Location loc = g.location();
+            if (loc.getWorld() == null || !loc.getChunk().isLoaded()) continue;
+            reviveMarkerIfMissing(g);
+        }
+    }
+
     // ------------------------------------------------------------------ open / loot
 
     public void open(Player player, Grave grave) {
