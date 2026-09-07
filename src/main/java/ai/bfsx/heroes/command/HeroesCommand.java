@@ -48,12 +48,12 @@ public class HeroesCommand implements TabExecutor {
             }
             case "stop" -> {
                 hearts.stop();
-                return true;
+                return msg(s, "Event stopped. Combat timers cleared for all players.", NamedTextColor.GREEN);
             }
             case "reset" -> {
                 hearts.reset();
                 plugin.graves().removeAll();
-                return msg(s, "Event reset: hearts cleared, all graves removed, state IDLE.", NamedTextColor.GREEN);
+                return msg(s, "Event reset: hearts cleared, all graves removed, combat timers cleared, state IDLE.", NamedTextColor.GREEN);
             }
             case "status" -> {
                 msg(s, "State: " + hearts.getState() + " | Graves: " + plugin.graves().all().size(), NamedTextColor.GOLD);

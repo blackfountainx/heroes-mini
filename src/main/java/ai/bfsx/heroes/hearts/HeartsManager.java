@@ -142,6 +142,7 @@ public class HeartsManager {
     public void stop() {
         state = State.IDLE;
         protectionUntil = 0L;
+        plugin.combat().clearAll();
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.getGameMode() == GameMode.SPECTATOR) p.setGameMode(GameMode.SURVIVAL);
         }
@@ -154,6 +155,7 @@ public class HeartsManager {
         names.clear();
         state = State.IDLE;
         protectionUntil = 0L;
+        plugin.combat().clearAll();
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.getGameMode() == GameMode.SPECTATOR) p.setGameMode(GameMode.SURVIVAL);
         }
@@ -173,6 +175,8 @@ public class HeartsManager {
         }
         if (alive == 1 && hearts.size() > 1) {
             state = State.ENDED;
+            protectionUntil = 0L;
+            plugin.combat().clearAll();
             save();
             Bukkit.broadcast(Component.text("★ " + nameOf(last) + " is the last one standing and wins the Heroes event! ★",
                     NamedTextColor.GOLD));
