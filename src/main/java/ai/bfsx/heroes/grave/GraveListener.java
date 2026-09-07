@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 public class GraveListener implements Listener {
 
@@ -25,6 +26,7 @@ public class GraveListener implements Listener {
         Grave grave = plugin.graves().fromEntity(e.getRightClicked());
         if (grave == null) return;
         e.setCancelled(true);
+        if (e.getHand() != EquipmentSlot.HAND) return;   // open only once, from the main hand
         Player p = e.getPlayer();
         if (p.getGameMode() == GameMode.SPECTATOR) return;
         plugin.graves().open(p, grave);

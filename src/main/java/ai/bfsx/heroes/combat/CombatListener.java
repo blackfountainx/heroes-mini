@@ -20,6 +20,17 @@ public class CombatListener implements Listener {
         this.plugin = plugin;
     }
 
+    // LOW + ignoreCancelled: cancelling here also keeps the MONITOR handler below from tagging combat.
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onProtectedPvp(EntityDamageByEntityEvent e) {
+        if (!plugin.hearts().isProtected()) return;
+        if (!(e.getEntity() instanceof Player victim)) return;
+        Player attacker = resolveAttacker(e.getDamager());
+        if (attacker == null || attacker.equals(victim)) return;
+        if (victim.getGameMode() == GameMode.SPECTATOR || attacker.getGameMode() == GameMode.SPECTATOR) return;
+        e.setCancelled(true);
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent e) {
         if (!plugin.hearts().isRunning()) return;

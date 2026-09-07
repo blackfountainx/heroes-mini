@@ -5,26 +5,28 @@ Private Minecraft Java event plugin for Paper 1.21.x. Designed by Selim.
 ## Rules
 
 - Every player starts with **3 Special Hearts** (shown as ❤❤❤ in the action bar above the XP bar).
+- `/heroes start` opens a **15-minute PvP protection phase** (configurable): all PvP damage — melee, player-shot projectiles, player-lit TNT — is blocked and no Combat timers start. Fall/mob/environmental damage and death still work normally. The action bar counts down (`❤❤❤   Protection 847s`); when it ends, "Protection phase over — PvP is now live!" is broadcast once and normal Combat/Heart rules resume.
 - A PvP hit puts **both** attacker and victim into **Combat** for 20 s; every further hit refreshes the timer. The countdown is shown next to the hearts: `❤❤❤   ⚔ Combat 17s`.
 - Dying **while in Combat** costs 1 Special Heart — whatever the final cause (fall, lava, mob). Dying outside Combat costs nothing.
 - 0 Special Hearts = **eliminated** → spectator mode. Last player with hearts wins.
 - On death nothing scatters: a **grave** (the player's head with a name tag) appears at the death spot, relocated to the nearest safe block if needed. **Anyone** can right-click it and loot it. The grave stays until it is empty. The dead player gets the coordinates in chat.
-- Hearts, eliminations and graves survive server restarts (`plugins/HeroesMini/data.yml`, `graves.yml`).
+- Hearts, eliminations, graves and a running protection countdown survive server restarts (`plugins/HeroesMini/data.yml`, `graves.yml`).
 
 ## Admin commands (op only)
 
 | Command | Effect |
 |---|---|
-| `/heroes start` | Start the event: everyone online gets 3 hearts. Players joining later get 3 too. |
+| `/heroes start` | Start the event: everyone online gets 3 hearts and the PvP protection phase begins. Players joining later get 3 too. |
 | `/heroes stop` | Pause the event (spectators return to survival). |
-| `/heroes reset` | Clear all hearts and graves, state back to idle. |
+| `/heroes reset` | Clear all hearts and graves, state back to idle (also ends protection). |
 | `/heroes status` | Hearts and Combat state of every participant. |
+| `/heroes protection [end]` | Show the protection countdown; `end` ends it early — PvP goes live. |
 | `/heroes hearts <player> <n>` | Set a player's Special Hearts. |
 | `/heroes revive <player>` | Bring an eliminated player back with 1 heart. |
 | `/heroes combat <player>` | Clear a stuck Combat timer. |
 | `/heroes graves` | List graves with coordinates. `tp <id>`, `remove <id>`, `clear`. |
 
-`config.yml`: `start-hearts`, `combat-seconds`, `grave-safe-radius`.
+`config.yml`: `start-hearts`, `combat-seconds`, `grave-safe-radius`, `protection-seconds` (900 = 15 min).
 
 ## Build
 

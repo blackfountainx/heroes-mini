@@ -16,6 +16,7 @@ public final class HeroesPlugin extends JavaPlugin {
 
     public static final int START_HEARTS = 3;
     public static final int COMBAT_SECONDS = 20;
+    public static final int PROTECTION_SECONDS = 900;
 
     private HeartsManager hearts;
     private CombatManager combat;
