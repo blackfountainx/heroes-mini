@@ -8,7 +8,7 @@ authors: [Selim, Black Fountain]
 commands:
   heroes:
     description: Admin commands for the Heroes Mini event
-    usage: /heroes <start|stop|reset|hearts|revive|graves|combat>
+    usage: /heroes <start|stop|reset|hearts|revive|graves|combat|protection [end]>
     permission: heroes.admin
 
 permissions:

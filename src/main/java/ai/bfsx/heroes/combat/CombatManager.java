@@ -32,6 +32,10 @@ public class CombatManager {
         combatUntil.remove(id);
     }
 
+    public void clearAll() {
+        combatUntil.clear();
+    }
+
     public boolean inCombat(UUID id) {
         return remainingSeconds(id) > 0;
     }

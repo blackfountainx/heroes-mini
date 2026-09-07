@@ -28,6 +28,7 @@ public class HeartsManager {
     private final Map<UUID, Integer> hearts = new HashMap<>();
     private final Map<UUID, String> names = new HashMap<>();
     private State state = State.IDLE;
+    private long protectionUntil = 0L;
 
     public HeartsManager(HeroesPlugin plugin) {
         this.plugin = plugin;
@@ -36,6 +37,26 @@ public class HeartsManager {
 
     public int startHearts() {
         return plugin.getConfig().getInt("start-hearts", HeroesPlugin.START_HEARTS);
+    }
+
+    public int protectionSeconds() {
+        return plugin.getConfig().getInt("protection-seconds", HeroesPlugin.PROTECTION_SECONDS);
+    }
+
+    /** True while the opening PvP protection phase is active. */
+    public boolean isProtected() {
+        return isRunning() && protectionUntil > System.currentTimeMillis();
+    }
+
+    /** Whole seconds of protection left, rounded up; 0 when not protected. */
+    public int protectionRemainingSeconds() {
+        if (!isProtected()) return 0;
+        return (int) Math.ceil((protectionUntil - System.currentTimeMillis()) / 1000.0);
+    }
+
+    public void endProtection() {
+        protectionUntil = 0L;
+        save();
     }
 
     public State getState() { return state; }
@@ -109,13 +130,18 @@ public class HeartsManager {
             names.put(p.getUniqueId(), p.getName());
             if (p.getGameMode() == GameMode.SPECTATOR) p.setGameMode(GameMode.SURVIVAL);
         }
+        protectionUntil = System.currentTimeMillis() + protectionSeconds() * 1000L;
+        plugin.combat().clearAll();
+        int mins = (protectionSeconds() + 59) / 60;
         save();
         Bukkit.broadcast(Component.text("The Heroes event has started! Everyone has " + startHearts()
-                + " Special Hearts. Last one standing wins.", NamedTextColor.GOLD));
+                + " Special Hearts. Last one standing wins. A " + mins
+                + "-minute PvP protection phase is active — no PvP damage until it ends!", NamedTextColor.GOLD));
     }
 
     public void stop() {
         state = State.IDLE;
+        protectionUntil = 0L;
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.getGameMode() == GameMode.SPECTATOR) p.setGameMode(GameMode.SURVIVAL);
         }
@@ -127,6 +153,7 @@ public class HeartsManager {
         hearts.clear();
         names.clear();
         state = State.IDLE;
+        protectionUntil = 0L;
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.getGameMode() == GameMode.SPECTATOR) p.setGameMode(GameMode.SURVIVAL);
         }
@@ -160,6 +187,7 @@ public class HeartsManager {
         } catch (IllegalArgumentException ex) {
             state = State.IDLE;
         }
+        protectionUntil = y.getLong("protection-until", 0L);
         hearts.clear();
         names.clear();
         if (y.isConfigurationSection("players")) {
@@ -178,6 +206,7 @@ public class HeartsManager {
     public void save() {
         YamlConfiguration y = new YamlConfiguration();
         y.set("state", state.name());
+        y.set("protection-until", protectionUntil);
         for (Map.Entry<UUID, Integer> e : hearts.entrySet()) {
             String k = "players." + e.getKey();
             y.set(k + ".hearts", e.getValue());
