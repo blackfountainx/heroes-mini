@@ -5,6 +5,7 @@ import ai.bfsx.heroes.combat.CombatManager;
 import ai.bfsx.heroes.command.HeroesCommand;
 import ai.bfsx.heroes.grave.GraveListener;
 import ai.bfsx.heroes.grave.GraveManager;
+import ai.bfsx.heroes.hearts.BannedItemListener;
 import ai.bfsx.heroes.hearts.DeathListener;
 import ai.bfsx.heroes.hearts.GameModeListener;
 import ai.bfsx.heroes.hearts.HeartsManager;
@@ -39,6 +40,7 @@ public final class HeroesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
         Bukkit.getPluginManager().registerEvents(new GraveListener(this), this);
         Bukkit.getPluginManager().registerEvents(new GameModeListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new BannedItemListener(this), this);
 
         HeroesCommand cmd = new HeroesCommand(this);
         getCommand("hero").setExecutor(cmd);

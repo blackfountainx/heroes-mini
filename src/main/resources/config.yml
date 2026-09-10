@@ -7,3 +7,5 @@ combat-seconds: 20
 grave-safe-radius: 6
 # Duration of the PvP protection phase at the start of an event, in seconds (900 = 15 minutes)
 protection-seconds: 900
+# Forbidden items during the event (Mace, Enchanted Golden Apple, Mending). true = enforced.
+ban-forbidden-items: true
