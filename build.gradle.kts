@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "ai.bfsx"
-version = "0.4.0"
+version = "0.5.0"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
