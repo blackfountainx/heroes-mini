@@ -93,8 +93,9 @@ public class HeroesCommand implements TabExecutor {
             case "revive" -> {
                 if (a.length < 2) return usage(s);
                 OfflinePlayer target = Bukkit.getOfflinePlayer(a[1]);
-                hearts.setHearts(target.getUniqueId(), target.getName(), 1);
-                return msg(s, hearts.nameOf(target.getUniqueId()) + " revived with 1 Special Heart.", NamedTextColor.GREEN);
+                boolean unbanned = hearts.revive(target.getUniqueId(), target.getName());
+                return msg(s, hearts.nameOf(target.getUniqueId()) + " revived with 1 Special Heart."
+                        + (unbanned ? " Server ban lifted, they can rejoin." : ""), NamedTextColor.GREEN);
             }
             case "combat" -> {
                 if (a.length < 2) return usage(s);

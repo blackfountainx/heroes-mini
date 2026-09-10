@@ -1,19 +1,26 @@
 package ai.bfsx.heroes.hearts;
 
 import ai.bfsx.heroes.HeroesPlugin;
+import io.papermc.paper.ban.BanListType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.ban.ProfileBanList;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -27,6 +34,8 @@ public class HeartsManager {
     private final File file;
     private final Map<UUID, Integer> hearts = new HashMap<>();
     private final Map<UUID, String> names = new HashMap<>();
+    /** Players banned by this plugin for elimination — never touch bans from other sources. */
+    private final Set<UUID> eventBanned = new HashSet<>();
     private State state = State.IDLE;
     private long protectionUntil = 0L;
 
@@ -108,14 +117,47 @@ public class HeartsManager {
         int remaining = Math.max(0, getHearts(p.getUniqueId()) - 1);
         hearts.put(p.getUniqueId(), remaining);
         names.put(p.getUniqueId(), p.getName());
-        save();
+        if (remaining <= 0) {
+            banForElimination(p);
+        } else {
+            save();
+        }
         return remaining;
     }
 
-    /** Puts eliminated players into spectator, everyone else back into survival. */
+    /** Elimination means a real server ban until the next event, not spectator mode. */
+    private void banForElimination(Player p) {
+        eventBanned.add(p.getUniqueId());
+        Bukkit.getBanList(BanListType.PROFILE).addBan(p.getPlayerProfile(),
+                "Eliminated - you lost all your Special Hearts!", (Date) null, "HeroesMini");
+        p.kick(Component.text("You lost all 3 Special Hearts - you're out! Good game.", NamedTextColor.RED));
+        save();
+    }
+
+    /** Lifts only the bans this plugin created; bans set by other means are untouched. */
+    public void clearEventBans() {
+        ProfileBanList bans = Bukkit.getBanList(BanListType.PROFILE);
+        for (UUID id : eventBanned) {
+            bans.pardon(Bukkit.createProfile(id));
+        }
+        eventBanned.clear();
+        save();
+    }
+
+    /** Revive: lifts an event ban if present and restores 1 heart. Returns true if a ban was lifted. */
+    public boolean revive(UUID id, String name) {
+        boolean wasBanned = eventBanned.remove(id);
+        if (wasBanned) {
+            Bukkit.getBanList(BanListType.PROFILE).pardon(Bukkit.createProfile(id));
+        }
+        setHearts(id, name, 1);
+        return wasBanned;
+    }
+
+    /** Eliminated players are banned and kicked; participants stuck in spectator go back to survival. */
     public void applyMode(Player p) {
         if (isRunning() && isEliminated(p.getUniqueId())) {
-            if (p.getGameMode() != GameMode.SPECTATOR) p.setGameMode(GameMode.SPECTATOR);
+            banForElimination(p);
         } else if (p.getGameMode() == GameMode.SPECTATOR && isParticipant(p.getUniqueId())) {
             p.setGameMode(GameMode.SURVIVAL);
         }
@@ -132,6 +174,7 @@ public class HeartsManager {
         }
         protectionUntil = System.currentTimeMillis() + protectionSeconds() * 1000L;
         plugin.combat().clearAll();
+        clearEventBans();
         int mins = (protectionSeconds() + 59) / 60;
         save();
         Bukkit.broadcast(Component.text("The Heroes event has started! Everyone has " + startHearts()
@@ -156,6 +199,7 @@ public class HeartsManager {
         state = State.IDLE;
         protectionUntil = 0L;
         plugin.combat().clearAll();
+        clearEventBans();
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (p.getGameMode() == GameMode.SPECTATOR) p.setGameMode(GameMode.SURVIVAL);
         }
@@ -184,6 +228,9 @@ public class HeartsManager {
     }
 
     public void load() {
+        hearts.clear();
+        names.clear();
+        eventBanned.clear();
         if (!file.exists()) return;
         YamlConfiguration y = YamlConfiguration.loadConfiguration(file);
         try {
@@ -192,8 +239,12 @@ public class HeartsManager {
             state = State.IDLE;
         }
         protectionUntil = y.getLong("protection-until", 0L);
-        hearts.clear();
-        names.clear();
+        for (String s : y.getStringList("event-banned")) {
+            try {
+                eventBanned.add(UUID.fromString(s));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
         if (y.isConfigurationSection("players")) {
             for (String key : y.getConfigurationSection("players").getKeys(false)) {
                 try {
@@ -211,6 +262,9 @@ public class HeartsManager {
         YamlConfiguration y = new YamlConfiguration();
         y.set("state", state.name());
         y.set("protection-until", protectionUntil);
+        List<String> banned = new ArrayList<>();
+        for (UUID id : eventBanned) banned.add(id.toString());
+        y.set("event-banned", banned);
         for (Map.Entry<UUID, Integer> e : hearts.entrySet()) {
             String k = "players." + e.getKey();
             y.set(k + ".hearts", e.getValue());

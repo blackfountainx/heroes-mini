@@ -1,8 +1,6 @@
 package ai.bfsx.heroes.hearts;
 
 import ai.bfsx.heroes.HeroesPlugin;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,13 +21,8 @@ public class JoinListener implements Listener {
         Player p = e.getPlayer();
         if (!plugin.hearts().isRunning()) return;
         plugin.hearts().ensureRegistered(p);
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            plugin.hearts().applyMode(p);
-            if (plugin.hearts().isEliminated(p.getUniqueId())) {
-                p.sendMessage(Component.text("You are eliminated - you can watch the rest of the event as a spectator.",
-                        NamedTextColor.GRAY));
-            }
-        });
+        // Eliminated players cannot join at all (banned), so no spectator handling here
+        Bukkit.getScheduler().runTask(plugin, () -> plugin.hearts().applyMode(p));
     }
 
     @EventHandler

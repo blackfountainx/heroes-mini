@@ -8,9 +8,9 @@ Private Minecraft Java event plugin for Paper 1.21.x. Designed by Selim.
 - `/hero start` opens a **15-minute PvP protection phase** (configurable): all PvP damage — melee, player-shot projectiles, player-lit TNT — is blocked and no Combat timers start. Fall/mob/environmental damage and death still work normally. The action bar counts down (`❤❤❤   Protection 847s`); when it ends, "Protection phase over — PvP is now live!" is broadcast once and normal Combat/Heart rules resume.
 - A PvP hit puts **both** attacker and victim into **Combat** for 20 s; every further hit refreshes the timer. The countdown is shown next to the hearts: `❤❤❤   ⚔ Combat 17s`.
 - Dying **while in Combat** costs 1 Special Heart — whatever the final cause (fall, lava, mob). Dying outside Combat costs nothing.
-- 0 Special Hearts = **eliminated** → spectator mode. Last player with hearts wins.
+- 0 Special Hearts = **eliminated** → the player is **banned** from the server (kicked with a message; the ban lifts automatically on `/hero start`, `/hero reset` or `/hero revive`). Last player with hearts wins.
 - On death nothing scatters: a **grave** (the player's head with a name tag) appears at the death spot, relocated to the nearest safe block if needed. **Anyone** can right-click it and loot it. The grave stays until it is empty. The dead player gets the coordinates in chat.
-- Hearts, eliminations, graves and a running protection countdown survive server restarts (`plugins/HeroesMini/data.yml`, `graves.yml`).
+- Hearts, eliminations, event bans, graves and a running protection countdown survive server restarts (`plugins/HeroesMini/data.yml`, `graves.yml`).
 
 ## Admin commands (op only)
 
@@ -24,7 +24,7 @@ Both `/hero` and the old `/heroes` alias work everywhere below.
 | `/hero status` | Hearts and Combat state of every participant. |
 | `/hero protection [end]` | Show the protection countdown; `end` ends it early — PvP goes live. |
 | `/hero hearts <player> <n>` | Set a player's Special Hearts. |
-| `/hero revive <player>` | Bring an eliminated player back with 1 heart. |
+| `/hero revive <player>` | Bring an eliminated player back with 1 heart and lift their event ban. |
 | `/hero combat <player>` | Clear a stuck Combat timer. |
 | `/hero graves` | List graves with coordinates. `tp <id>`, `remove <id>`, `clear`. |
 
@@ -50,7 +50,7 @@ Locally (Java 21): `./gradlew build` → `build/libs/HeroesMini-<version>.jar`.
 3. B jumps off a cliff within 20 s → B loses a heart, grave appears, coordinates in B's chat.
 4. B waits 20 s after a hit, then jumps → no heart lost.
 5. A right-clicks B's grave → GUI with B's items; take everything → grave disappears.
-6. B loses 3rd heart → spectator, broadcast. If only A remains → A wins.
+6. B loses 3rd heart → kicked + banned, broadcast. If only A remains → A wins.
 7. Restart the server → hearts and graves are still there.
 8. Die in lava → grave is placed on the nearest safe block.
 
