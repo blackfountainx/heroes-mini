@@ -5,7 +5,7 @@ Private Minecraft Java event plugin for Paper 1.21.x. Designed by Selim.
 ## Rules
 
 - Every player starts with **3 Special Hearts** (shown as ❤❤❤ in the action bar above the XP bar).
-- `/heroes start` opens a **15-minute PvP protection phase** (configurable): all PvP damage — melee, player-shot projectiles, player-lit TNT — is blocked and no Combat timers start. Fall/mob/environmental damage and death still work normally. The action bar counts down (`❤❤❤   Protection 847s`); when it ends, "Protection phase over — PvP is now live!" is broadcast once and normal Combat/Heart rules resume.
+- `/hero start` opens a **15-minute PvP protection phase** (configurable): all PvP damage — melee, player-shot projectiles, player-lit TNT — is blocked and no Combat timers start. Fall/mob/environmental damage and death still work normally. The action bar counts down (`❤❤❤   Protection 847s`); when it ends, "Protection phase over — PvP is now live!" is broadcast once and normal Combat/Heart rules resume.
 - A PvP hit puts **both** attacker and victim into **Combat** for 20 s; every further hit refreshes the timer. The countdown is shown next to the hearts: `❤❤❤   ⚔ Combat 17s`.
 - Dying **while in Combat** costs 1 Special Heart — whatever the final cause (fall, lava, mob). Dying outside Combat costs nothing.
 - 0 Special Hearts = **eliminated** → spectator mode. Last player with hearts wins.
@@ -14,17 +14,19 @@ Private Minecraft Java event plugin for Paper 1.21.x. Designed by Selim.
 
 ## Admin commands (op only)
 
+Both `/hero` and the old `/heroes` alias work everywhere below.
+
 | Command | Effect |
 |---|---|
-| `/heroes start` | Start the event: everyone online gets 3 hearts and the PvP protection phase begins. Players joining later get 3 too. |
-| `/heroes stop` | Pause the event (spectators return to survival). |
-| `/heroes reset` | Clear all hearts and graves, state back to idle (also ends protection). |
-| `/heroes status` | Hearts and Combat state of every participant. |
-| `/heroes protection [end]` | Show the protection countdown; `end` ends it early — PvP goes live. |
-| `/heroes hearts <player> <n>` | Set a player's Special Hearts. |
-| `/heroes revive <player>` | Bring an eliminated player back with 1 heart. |
-| `/heroes combat <player>` | Clear a stuck Combat timer. |
-| `/heroes graves` | List graves with coordinates. `tp <id>`, `remove <id>`, `clear`. |
+| `/hero start` | Start the event: everyone online gets 3 hearts and the PvP protection phase begins. Players joining later get 3 too. |
+| `/hero stop` | Pause the event (spectators return to survival). |
+| `/hero reset` | Clear all hearts and graves, state back to idle (also ends protection). |
+| `/hero status` | Hearts and Combat state of every participant. |
+| `/hero protection [end]` | Show the protection countdown; `end` ends it early — PvP goes live. |
+| `/hero hearts <player> <n>` | Set a player's Special Hearts. |
+| `/hero revive <player>` | Bring an eliminated player back with 1 heart. |
+| `/hero combat <player>` | Clear a stuck Combat timer. |
+| `/hero graves` | List graves with coordinates. `tp <id>`, `remove <id>`, `clear`. |
 
 `config.yml`: `start-hearts`, `combat-seconds`, `grave-safe-radius`, `protection-seconds` (900 = 15 min).
 
@@ -39,11 +41,11 @@ Locally (Java 21): `./gradlew build` → `build/libs/HeroesMini-<version>.jar`.
 
 1. Download a Paper 1.21.x server JAR from https://papermc.io/downloads/paper
 2. Put `HeroesMini-*.jar` into the server's `plugins/` folder.
-3. Start the server, op yourself, `/heroes start`.
+3. Start the server, op yourself, `/hero start`.
 
 ## Test checklist
 
-1. Two players, `/heroes start` → both see ❤❤❤.
+1. Two players, `/hero start` → both see ❤❤❤.
 2. A hits B once → both see `⚔ Combat 20s` counting down.
 3. B jumps off a cliff within 20 s → B loses a heart, grave appears, coordinates in B's chat.
 4. B waits 20 s after a hit, then jumps → no heart lost.

@@ -21,12 +21,12 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * /heroes start|stop|reset|status
- * /heroes protection [end]
- * /heroes hearts <player> <n>
- * /heroes revive <player>
- * /heroes combat <player> clear
- * /heroes graves [tp <id>|remove <id>|clear]
+ * /hero start|stop|reset|status
+ * /hero protection [end]
+ * /hero hearts <player> <n>
+ * /hero revive <player>
+ * /hero combat <player> clear
+ * /hero graves [tp <id>|remove <id>|clear]
  */
 public class HeroesCommand implements TabExecutor {
 
@@ -138,9 +138,9 @@ public class HeroesCommand implements TabExecutor {
     }
 
     private boolean usage(CommandSender s) {
-        msg(s, "/heroes start | stop | reset | status | protection [end]", NamedTextColor.YELLOW);
-        msg(s, "/heroes hearts <player> <n>   /heroes revive <player>   /heroes combat <player>", NamedTextColor.YELLOW);
-        msg(s, "/heroes graves [tp <id> | remove <id> | clear]", NamedTextColor.YELLOW);
+        msg(s, "/hero start | stop | reset | status | protection [end]", NamedTextColor.YELLOW);
+        msg(s, "/hero hearts <player> <n>   /hero revive <player>   /hero combat <player>", NamedTextColor.YELLOW);
+        msg(s, "/hero graves [tp <id> | remove <id> | clear]", NamedTextColor.YELLOW);
         return true;
     }
 

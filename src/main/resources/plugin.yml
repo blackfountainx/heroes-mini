@@ -6,10 +6,11 @@ description: Minecraft Heroes Mini - Special Hearts, Combat timer, Graves. Last 
 authors: [Selim, Black Fountain]
 
 commands:
-  heroes:
+  hero:
     description: Admin commands for the Heroes Mini event
-    usage: /heroes <start|stop|reset|hearts|revive|graves|combat|protection [end]>
+    usage: /hero <start|stop|reset|hearts|revive|graves|combat|protection [end]>
     permission: heroes.admin
+    aliases: [heroes]
 
 permissions:
   heroes.admin:

@@ -39,8 +39,8 @@ public final class HeroesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new GraveListener(this), this);
 
         HeroesCommand cmd = new HeroesCommand(this);
-        getCommand("heroes").setExecutor(cmd);
-        getCommand("heroes").setTabCompleter(cmd);
+        getCommand("hero").setExecutor(cmd);
+        getCommand("hero").setTabCompleter(cmd);
 
         new ActionBarTask(this).runTaskTimer(this, 20L, 20L);
         // Self-healing grave markers: re-spawn any removed at runtime, loaded chunks only
