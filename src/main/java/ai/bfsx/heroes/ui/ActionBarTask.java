@@ -35,7 +35,8 @@ public class ActionBarTask extends BukkitRunnable {
             int have = plugin.hearts().getHearts(p.getUniqueId());
             Component line = Component.empty();
             for (int i = 0; i < max; i++) {
-                line = line.append(Component.text("❤", i < have ? NamedTextColor.RED : NamedTextColor.DARK_GRAY));
+                // BLUE per stakeholder request; switch to AQUA if BLUE reads too dark in-game.
+                line = line.append(Component.text("❤", i < have ? NamedTextColor.BLUE : NamedTextColor.GRAY));
             }
             if (have <= 0) {
                 line = line.append(Component.text("  ELIMINATED", NamedTextColor.DARK_RED, TextDecoration.BOLD));
