@@ -10,6 +10,7 @@ import ai.bfsx.heroes.hearts.DeathListener;
 import ai.bfsx.heroes.hearts.GameModeListener;
 import ai.bfsx.heroes.hearts.HeartsManager;
 import ai.bfsx.heroes.hearts.JoinListener;
+import ai.bfsx.heroes.item.GrapplingHookListener;
 import ai.bfsx.heroes.ui.ActionBarTask;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,6 +24,7 @@ public final class HeroesPlugin extends JavaPlugin {
     private HeartsManager hearts;
     private CombatManager combat;
     private GraveManager graves;
+    private GrapplingHookListener hooks;
 
     @Override
     public void onEnable() {
@@ -41,6 +43,9 @@ public final class HeroesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new GraveListener(this), this);
         Bukkit.getPluginManager().registerEvents(new GameModeListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BannedItemListener(this), this);
+        hooks = new GrapplingHookListener(this);
+        Bukkit.getPluginManager().registerEvents(hooks, this);
+        hooks.registerRecipes();
 
         HeroesCommand cmd = new HeroesCommand(this);
         getCommand("hero").setExecutor(cmd);
@@ -57,6 +62,7 @@ public final class HeroesPlugin extends JavaPlugin {
     public void onDisable() {
         if (hearts != null) hearts.save();
         if (graves != null) graves.save();
+        if (hooks != null) hooks.unregisterRecipes();
         getLogger().info("HeroesMini disabled, state saved.");
     }
 
