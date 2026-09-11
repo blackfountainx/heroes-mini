@@ -136,6 +136,8 @@ public class GrapplingHookListener implements Listener {
 
     /** First click: store the anchor point and show the player where it landed. */
     private void shootAnchor(Player p) {
+        // hook-max-range 250 needs allow-flight=true in server.properties, or long pulls
+        // can trip a "Flying is not enabled" kick (vanilla anti-fly, not a plugin bug).
         int range = plugin.getConfig().getInt("hook-max-range", 30);
         Location eye = p.getEyeLocation();
         World world = p.getWorld();
@@ -145,6 +147,8 @@ public class GrapplingHookListener implements Listener {
             p.sendActionBar(Component.text("Hook hit nothing", NamedTextColor.RED));
             return;
         }
+        // Blocks, players and mobs all store the same thing: the contact point. The user is
+        // always flung TO this anchor; the hit target is never pulled toward the user.
         Location anchor = hit.getHitPosition().toLocation(world);
         anchors.put(p.getUniqueId(), anchor);
         drawLine(eye.toVector(), hit.getHitPosition(), world);
@@ -166,6 +170,8 @@ public class GrapplingHookListener implements Listener {
         Vector dir = anchor.toVector().subtract(p.getEyeLocation().toVector());
         double dist = dir.length();
         // Zero-length normalize throws; a point-blank anchor just gets the upward boost.
+        // Power stays capped at 2.5 even for 250-block anchors: a controlled, repeatable
+        // arc instead of one violent yank (re-click to re-anchor and continue).
         Vector v = dist < 0.01 ? new Vector(0, 0.4, 0)
                 : dir.normalize().multiply(Math.min(dist * 0.25, 2.5)).add(new Vector(0, 0.4, 0));
         p.setVelocity(v);

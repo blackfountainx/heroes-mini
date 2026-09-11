@@ -10,6 +10,6 @@ protection-seconds: 900
 # Forbidden items during the event (Mace, Enchanted Golden Apple, Mending). true = enforced.
 ban-forbidden-items: true
 # Grappling hook
-hook-max-range: 30
+hook-max-range: 250
 hook-iron-uses: 100
 hook-diamond-uses: 165
